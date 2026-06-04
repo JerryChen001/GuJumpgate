@@ -7,6 +7,7 @@ cd /d "%~dp0"
 set "HELPER_SCRIPT=scripts\hotmail_helper.py"
 set "LOG_DIR=data"
 set "START_LOG=%LOG_DIR%\hotmail-helper-start.log"
+set "HELPER_HOST=0.0.0.0"
 
 if not exist "%LOG_DIR%" mkdir "%LOG_DIR%" >nul 2>nul
 call :log_line "launcher opened"
@@ -83,7 +84,7 @@ call :check_port_available %~1
 if errorlevel 1 goto :port_in_use
 
 call :log_line "starting helper on port %~1"
-"%PYTHON_EXE%" %PYTHON_ARGS% "%HELPER_SCRIPT%" --port %~1
+"%PYTHON_EXE%" %PYTHON_ARGS% "%HELPER_SCRIPT%" --host %HELPER_HOST% --port %~1
 set "HELPER_EXIT_CODE=%errorlevel%"
 call :log_line "helper exited with code %HELPER_EXIT_CODE%"
 if not "%HELPER_EXIT_CODE%"=="0" (
@@ -93,7 +94,7 @@ if not "%HELPER_EXIT_CODE%"=="0" (
   echo Common causes:
   echo   1. Python is not installed or is older than 3.10.
   echo   2. Port %~1 is already in use. Close the old helper window or use another port.
-  echo   3. Security software blocked Python from starting a local 127.0.0.1 service.
+  echo   3. Security software or firewall blocked Python from starting the local helper service.
   echo.
   pause
 )
@@ -130,11 +131,14 @@ echo ------------------------------------------------------------
 echo Folder: %CD%
 echo Python: %PYTHON_EXE% %PYTHON_ARGS%
 "%PYTHON_EXE%" %PYTHON_ARGS% --version
-echo Helper: http://127.0.0.1:%~1
+echo Bind:   %HELPER_HOST%:%~1
+echo Local:  http://127.0.0.1:%~1
+echo LAN:    http://<your-lan-ip>:%~1
 echo Check:  http://127.0.0.1:%~1/health
 echo Log:    %CD%\%START_LOG%
 echo ------------------------------------------------------------
 echo Keep this window open while GuJumpgate is running.
+echo Other devices on the same LAN can use the LAN address if your firewall allows it.
 echo.
 exit /b 0
 
