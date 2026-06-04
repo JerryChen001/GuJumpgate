@@ -4,12 +4,14 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
+HOTMAIL_HELPER_HOST="${HOTMAIL_HELPER_HOST:-0.0.0.0}"
+
 if command -v python3 >/dev/null 2>&1; then
-  exec python3 scripts/hotmail_helper.py "$@"
+  exec python3 scripts/hotmail_helper.py --host "$HOTMAIL_HELPER_HOST" "$@"
 fi
 
 if command -v python >/dev/null 2>&1; then
-  exec python scripts/hotmail_helper.py "$@"
+  exec python scripts/hotmail_helper.py --host "$HOTMAIL_HELPER_HOST" "$@"
 fi
 
 echo "Python 3 not found. Please install Python 3.10+ and try again."
